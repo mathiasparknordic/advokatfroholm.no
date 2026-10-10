@@ -194,3 +194,13 @@ a.kanal:hover { background: var(--gronn-2); color: var(--hvit); }
 .spesial p { margin: 0 0 12px; }
 .spesial p:last-child { margin-bottom: 0; }
 @media (max-width: 900px) { .spesial { grid-template-columns: 1fr; gap: 20px; padding: 36px 28px; } }
+
+/* Artikler */
+.artikler { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.artikkel { display: flex; flex-direction: column; border: 1px solid var(--linje); border-top: 3px solid var(--messing); padding: 32px; text-decoration: none; color: var(--grafitt); transition: border-color .15s, box-shadow .15s; }
+.artikkel:hover { border-color: var(--gronn); border-top-color: var(--messing); box-shadow: 0 8px 24px rgba(31,61,52,.08); color: var(--grafitt); }
+.artikkel .meta { font-size: 12px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: #8A8A8A; margin-bottom: 14px; }
+.artikkel p { margin: 0 0 20px; font-size: 16px; }
+.artikkel .les { margin-top: auto; font-weight: 600; font-size: 15px; color: var(--gronn); }
+.artikkel:hover .les { color: var(--messing); }
+@media (max-width: 900px) { .artikler { grid-template-columns: 1fr; } }
