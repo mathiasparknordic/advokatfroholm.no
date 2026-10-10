@@ -185,3 +185,12 @@ a.kanal:hover { background: var(--gronn-2); color: var(--hvit); }
 .sprak a[aria-current="true"] { opacity: 1; border-color: var(--messing); }
 .sprak svg { width: 26px; height: 18px; display: block; box-shadow: 0 0 0 1px rgba(0,0,0,.08); }
 @media (max-width: 600px) { .meny { gap: 12px; } .sprak svg { width: 24px; height: 17px; } }
+
+/* Spesialfelt (OPS) */
+.spesial { display: grid; grid-template-columns: .8fr 1.2fr; gap: 48px; background: var(--gronn); color: rgba(255,255,255,.88); padding: 44px 48px; margin-bottom: 48px; position: relative; }
+.spesial .etikett, .spesial h3 { color: var(--hvit); }
+.spesial .etikett { margin-bottom: 12px; }
+.spesial h3 { font-size: clamp(24px, 2.6vw, 30px); margin: 0; }
+.spesial p { margin: 0 0 12px; }
+.spesial p:last-child { margin-bottom: 0; }
+@media (max-width: 900px) { .spesial { grid-template-columns: 1fr; gap: 20px; padding: 36px 28px; } }
