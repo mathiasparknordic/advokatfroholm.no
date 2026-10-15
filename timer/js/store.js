@@ -100,7 +100,12 @@
     var G = window.Graph;
     return {
       navn: "onedrive",
-      lesData: function () { return G.lesJson(DATA_STI); },
+      lesData: function () {
+        // Mappene må finnes slik at Power Automate-flyten kan peke på dem.
+        Promise.all([G.sikreMappe(GRUNNLAG_MAPPE), G.sikreMappe(SENDT_MAPPE)])
+          .catch(function (e) { console.warn("Kunne ikke opprette mapper", e); });
+        return G.lesJson(DATA_STI);
+      },
       skrivData: async function (data, eTag) {
         var item = await G.skrivJson(DATA_STI, data, eTag ? { ifMatch: eTag } : { nyFil: true });
         return item.eTag;
