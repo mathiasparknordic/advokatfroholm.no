@@ -1,3 +1,8 @@
+/*!
+ * Timeføring – Advokat Geir Frøholm AS
+ * © 2026 Mathias Frøholm. Alle rettigheter forbeholdt.
+ * Kopiering, endring eller gjenbruk uten skriftlig tillatelse er ikke tillatt.
+ */
 /* Timeføring – Advokat Geir Frøholm AS */
 @font-face {
   font-family: "Manrope";
@@ -702,3 +707,9 @@ kbd { font: inherit; font-size: 11px; font-weight: 600; border: 1px solid curren
 .hjelp-steg span { font-size: 14px; }
 .forslag { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 4px; color: var(--grafitt); font-weight: 600; font-size: 13.5px; }
 .forslag .knapp { background: var(--hvit); }
+
+/* Opphavsmerking */
+.opphav { margin: 0; font-size: 11px; letter-spacing: .04em; line-height: 1.4; }
+.opphav-sidenav { padding: 12px 24px 4px; color: rgba(255,255,255,.4); }
+.opphav-login { text-align: center; color: rgba(255,255,255,.35); margin-top: 8px; }
+.opphav-mer { padding: 16px 4px 0; color: var(--demp, #6B6B6B); border-top: 1px solid var(--linje); }

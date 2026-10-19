@@ -1,3 +1,8 @@
+/*!
+ * Timeføring – Advokat Geir Frøholm AS
+ * © 2026 Mathias Frøholm. Alle rettigheter forbeholdt.
+ * Kopiering, endring eller gjenbruk uten skriftlig tillatelse er ikke tillatt.
+ */
 /*
  * Oppdrag – tolker oppdragsbekreftelser (limt inn tekst eller .docx).
  * Advokat Geir Frøholm AS – timeføring.

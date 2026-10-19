@@ -1,3 +1,8 @@
+/*!
+ * Timeføring – Advokat Geir Frøholm AS
+ * © 2026 Mathias Frøholm. Alle rettigheter forbeholdt.
+ * Kopiering, endring eller gjenbruk uten skriftlig tillatelse er ikke tillatt.
+ */
 /*
  * Timeføring – brukergrensesnitt.
  * Avhenger av: TIMER_CONFIG, Auth, Graph, Store, Brreg, Oppdrag (parser.js), Faktura (excel.js).
@@ -130,6 +135,7 @@
   function erDemo() { return Store.modus() === "demo"; }
 
   var FIRMA = { navn: "Advokat Geir Frøholm AS", orgnr: "929 196 325" };
+  var OPPHAV = "© 2026 Mathias Frøholm · Alle rettigheter forbeholdt";
   function prisGrenser() {
     var O = window.Oppdrag || {};
     return { min: Number(O.TIMEPRIS_MIN) || 2500, max: Number(O.TIMEPRIS_MAX) || 3000 };
@@ -623,7 +629,8 @@
       el("ul", { class: "sidenav-liste" }, SEKSJONER.map(function (s) { return el("li", null, navKnapp(s, "nav-knapp")); })),
       el("div", { class: "sidenav-bunn" },
         el("p", { class: "sidenav-konto" }, el("small", null, modus === "demo" ? "Demo-modus" : "Innlogget som"), el("span", null, konto ? konto.username : "")),
-        el("button", { type: "button", class: "nav-knapp", onclick: function () { avslutt(null); } }, ikon("ut"), el("span", null, modus === "demo" ? "Avslutt demo" : "Logg ut"))));
+        el("button", { type: "button", class: "nav-knapp", onclick: function () { avslutt(null); } }, ikon("ut"), el("span", null, modus === "demo" ? "Avslutt demo" : "Logg ut")),
+        el("p", { class: "opphav opphav-sidenav" }, OPPHAV)));
 
     // Toppfelt
     tittelEl = el("h1", { class: "topp-tittel" });
@@ -673,7 +680,8 @@
     h = aapneDialog({
       tittel: "Mer", klasse: "dialog-ark",
       innhold: el("div", { class: "mer-liste" }, valg("oppdrag"), valg("faktura"), valg("innst"),
-        el("button", { type: "button", class: "mer-valg", onclick: function () { h.lukk(); avslutt(null); } }, ikon("ut"), erDemo() ? "Avslutt demo" : "Logg ut"))
+        el("button", { type: "button", class: "mer-valg", onclick: function () { h.lukk(); avslutt(null); } }, ikon("ut"), erDemo() ? "Avslutt demo" : "Logg ut"),
+        el("p", { class: "opphav opphav-mer" }, OPPHAV))
     });
   }
 
@@ -1675,7 +1683,8 @@
           !Auth.konfigurert() ? el("p", { class: "login-hint" }, "Innlogging er ikke satt opp ennå.") : null,
           demoTillatt() ? el("button", { type: "button", class: "knapp lys", onclick: function () { startApp("demo"); } }, "Åpne demo") : null),
         demoTillatt() ? el("p", { class: "login-hint" }, "Demoen bruker eksempeldata og lagrer bare i denne nettleseren.") : null),
-      el("p", { class: "login-fot" }, "Kun for " + FIRMA.navn + " · Org.nr. " + FIRMA.orgnr)));
+      el("p", { class: "login-fot" }, "Kun for " + FIRMA.navn + " · Org.nr. " + FIRMA.orgnr),
+      el("p", { class: "opphav opphav-login" }, OPPHAV)));
     var f = rot.querySelector(".login .knapp:not([disabled])");
     if (f) f.focus();
   }

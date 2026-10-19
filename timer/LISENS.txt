@@ -1,0 +1,9 @@
+Timeføring – Advokat Geir Frøholm AS
+Copyright © 2026 Mathias Frøholm. Alle rettigheter forbeholdt.
+
+Kildekoden i denne mappen (timer/) er utviklet av og eies av Mathias Frøholm.
+Kopiering, endring, distribusjon eller gjenbruk, helt eller delvis, er ikke
+tillatt uten skriftlig tillatelse fra Mathias Frøholm.
+
+Tredjepartsbiblioteker i timer/vendor/ har egne lisenser (MSAL: MIT,
+JSZip: MIT/GPLv3, ExcelJS: MIT) og omfattes ikke av denne merknaden.

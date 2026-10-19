@@ -1,3 +1,8 @@
+/*!
+ * Timeføring – Advokat Geir Frøholm AS
+ * © 2026 Mathias Frøholm. Alle rettigheter forbeholdt.
+ * Kopiering, endring eller gjenbruk uten skriftlig tillatelse er ikke tillatt.
+ */
 /*
  * Oppslag i Enhetsregisteret (Brønnøysundregistrene). Åpent API, ingen nøkkel.
  * Kun org.nr. eller firmanavn sendes. Global: window.Brreg

@@ -1,3 +1,8 @@
+/*!
+ * Timeføring – Advokat Geir Frøholm AS
+ * © 2026 Mathias Frøholm. Alle rettigheter forbeholdt.
+ * Kopiering, endring eller gjenbruk uten skriftlig tillatelse er ikke tillatt.
+ */
 /*
  * Konfigurasjon for timeføringen.
  * clientId/tenantId er ikke hemmeligheter, men står tomme til app-registreringen i Entra ID er gjort.

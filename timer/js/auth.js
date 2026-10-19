@@ -1,3 +1,8 @@
+/*!
+ * Timeføring – Advokat Geir Frøholm AS
+ * © 2026 Mathias Frøholm. Alle rettigheter forbeholdt.
+ * Kopiering, endring eller gjenbruk uten skriftlig tillatelse er ikke tillatt.
+ */
 /*
  * Innlogging med Microsoft Entra ID (MSAL.js v5, auth code + PKCE, redirect-flyt).
  * Global: window.Auth
