@@ -401,6 +401,37 @@
     var satsF = felt({ etikett: "Timesats", verdi: linje && linje.sats != null ? String(linje.sats) : "", inputmode: "decimal", hint: "Hentes fra saken. Endre bare ved avvikende sats.", klasse: "felt-sats" });
     var belopF = felt({ etikett: "Beløp (kr)", verdi: linje && linje.belop != null ? String(linje.belop).replace(".", ",") : "", inputmode: "decimal", paakrevd: true });
     var mvaF = bryter({ etikett: "MVA-pliktig utlegg", verdi: linje ? !!linje.mvaPliktig : false });
+    // Kjøregodtgjørelse etter statens sats (se js/satser.js)
+    var redigererTime = !!(linje && type === "time");
+    var kmF = felt({ etikett: "Kjøring (km)", verdi: linje && linje.km != null ? tTall(linje.km) : "", inputmode: "decimal", placeholder: "f.eks. 42", klasse: "felt-km",
+      hint: "Valgfritt. Faktureres som kjøregodtgjørelse etter statens sats." });
+    var kmInfo = el("p", { class: "km-info", "aria-live": "polite" });
+    kmF.appendChild(kmInfo);
+    function kmBeregn() {
+      var km = tolkBelop(kmF.input.value);
+      if (!kmF.input.value.trim()) return { tom: true };
+      if (!isFinite(km) || km <= 0 || km > 5000) return { feil: "Skriv antall km, f.eks. 42 eller 12,5." };
+      var st = window.Satser ? Satser.kmSats(datoF.input.value) : null;
+      if (!st) return { feil: "Ingen statlig sats er registrert for denne datoen. Før beløpet som vanlig utlegg." };
+      return { km: Math.round(km * 10) / 10, sats: st.sats, belop: Math.round(km * st.sats * 100) / 100, st: st };
+    }
+    function kmTekst(k) { return "Kjøregodtgjørelse " + tTall(k.km) + " km à " + kr(k.sats); }
+    function oppdaterKm() {
+      var k = kmBeregn();
+      kmF.settFeil(k.feil || "");
+      if (k.tom || k.feil) {
+        kmInfo.textContent = "";
+        if (type === "utlegg" && belopF.input.readOnly) { belopF.input.readOnly = false; }
+        return;
+      }
+      kmInfo.textContent = tTall(k.km) + " km × " + kr(k.sats) + " = " + kr(k.belop) + " · statens sats fra " + dato(k.st.fra) +
+        (k.st.ubekreftet ? ". OBS: avtaleperioden er utløpt – sjekk om satsen er endret." : "");
+      if (type === "utlegg") {
+        belopF.input.value = String(k.belop).replace(".", ",");
+        belopF.input.readOnly = true;
+        belopF.settFeil("");
+      }
+    }
     var sumEl = el("p", { class: "foring-sum", "aria-live": "polite" });
     var satsDetaljer = el("details", { class: "foring-mer" }, el("summary", null, "Avvikende timesats"), satsF);
     if (linje && linje.sats != null && Store.sak(linje.sakId) && Number(linje.sats) !== Number(Store.sak(linje.sakId).timepris)) satsDetaljer.open = true;
@@ -426,13 +457,16 @@
       if (type === "time") {
         felterBoks.appendChild(el("div", { class: "foring-grid" }, sakF, datoF, el("div", { class: "felt-gruppe-timer" }, timerF, hurtig), beskrF));
         felterBoks.appendChild(el("div", { class: "foring-bunn" }, fakturerbarF, satsDetaljer, sumEl));
+        if (!redigererTime) felterBoks.appendChild(kmF);
         lagre.textContent = linje ? "Lagre endringer" : "Lagre føring";
       } else {
         felterBoks.appendChild(el("div", { class: "foring-grid" }, sakF, datoF, belopF, beskrF));
+        felterBoks.appendChild(kmF);
         felterBoks.appendChild(el("div", { class: "foring-bunn" }, mvaF));
         lagre.textContent = linje ? "Lagre endringer" : "Lagre utlegg";
       }
       oppdaterSum();
+      oppdaterKm();
     }
     var satsVarsel = el("p", { class: "felt-varsel", "aria-live": "polite" });
     satsF.appendChild(satsVarsel);
@@ -440,6 +474,12 @@
     timerF.input.addEventListener("input", function () { timerF.settFeil(""); oppdaterSum(); });
     satsF.input.addEventListener("input", function () { sjekkSats(); oppdaterSum(); });
     fakturerbarF.input.addEventListener("change", oppdaterSum);
+    kmF.input.addEventListener("input", function () {
+      // Kjøring er en del av tjenesten og faktureres med mva.
+      if (type === "utlegg" && kmF.input.value.trim()) mvaF.input.checked = true;
+      oppdaterKm();
+    });
+    datoF.input.addEventListener("change", oppdaterKm);
 
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -448,6 +488,7 @@
       if (!sid) { sakF.settFeil("Velg en sak."); ok = false; }
       if (!datoF.input.value) { datoF.settFeil("Velg dato."); ok = false; } else datoF.settFeil("");
       var data = { sakId: sid, dato: datoF.input.value, beskrivelse: beskrF.input.value };
+      var kmT = null, kmU = null;
       if (type === "time") {
         var h = tolkTimer(timerF.input.value);
         if (!isFinite(h) || h <= 0 || h > 24) { timerF.settFeil("Skriv timer som 1,5 eller 1:30 (maks 24)."); ok = false; }
@@ -455,11 +496,22 @@
         var sats = satsF.input.value.trim() ? tolkBelop(satsF.input.value) : (Store.sak(sid) ? Store.sak(sid).timepris : 0);
         if (!isFinite(sats)) { satsF.settFeil("Ugyldig sats."); satsDetaljer.open = true; ok = false; }
         data.timer = h; data.sats = sats; data.fakturerbar = fakturerbarF.input.checked;
+        kmT = redigererTime ? { tom: true } : kmBeregn();
+        if (kmT.feil) { kmF.settFeil(kmT.feil); ok = false; }
       } else {
+        kmU = kmBeregn();
+        if (kmU.feil) { kmF.settFeil(kmU.feil); ok = false; }
+        else if (!kmU.tom) {
+          belopF.input.value = String(kmU.belop).replace(".", ",");
+          if (!beskrF.input.value.trim()) beskrF.input.value = kmTekst(kmU);
+          data.beskrivelse = beskrF.input.value;
+        }
         var b = tolkBelop(belopF.input.value);
         if (!isFinite(b) || b <= 0) { belopF.settFeil("Skriv et beløp, f.eks. 350 eller 1 243,50."); ok = false; } else belopF.settFeil("");
         if (!beskrF.input.value.trim()) { beskrF.settFeil("Skriv hva utlegget gjelder."); ok = false; } else beskrF.settFeil("");
         data.belop = b; data.mvaPliktig = mvaF.input.checked;
+        if (kmU && !kmU.tom && !kmU.feil) { data.km = kmU.km; data.kmSats = kmU.sats; data.belop = kmU.belop; }
+        else if (linje && linje.km != null) { data.km = null; data.kmSats = null; }
       }
       if (!ok) { var f = form.querySelector("[aria-invalid=true]"); if (f) f.focus(); return; }
       lagre.disabled = true;
@@ -467,10 +519,17 @@
         var res;
         if (linje) res = type === "time" ? await Store.endreTime(linje.id, data) : await Store.endreUtlegg(linje.id, data);
         else res = type === "time" ? await Store.leggTilTime(data) : await Store.leggTilUtlegg(data);
+        if (!linje && type === "time" && kmT && !kmT.tom && !kmT.feil) {
+          await Store.leggTilUtlegg({
+            sakId: sid, dato: data.dato, timeId: res.id, km: kmT.km, kmSats: kmT.sats, belop: kmT.belop, mvaPliktig: true,
+            beskrivelse: kmTekst(kmT) + (data.beskrivelse ? " – " + String(data.beskrivelse).trim().split("\n")[0].slice(0, 80) : "")
+          });
+          res.kmLagret = kmT;
+        }
         huskSak(sid);
         if (o.vedLagret) o.vedLagret(res, type);
         if (!linje && o.nullstill !== false) {
-          timerF.input.value = ""; beskrF.input.value = ""; belopF.input.value = "";
+          timerF.input.value = ""; beskrF.input.value = ""; belopF.input.value = ""; kmF.input.value = ""; belopF.input.readOnly = false; kmInfo.textContent = "";
           oppdaterSum();
         }
       } catch (err) {
@@ -513,7 +572,7 @@
     var skjema = foringsskjema(Object.assign({}, forhånd || {}, {
       vedLagret: function (res, type) {
         h.lukk();
-        toast(type === "utlegg" ? "Utlegget er lagret." : "Føringen er lagret: " + t(res.timer) + " på " + (Store.sak(res.sakId) || {}).saksnr + ".", "ok");
+        toast(type === "utlegg" ? "Utlegget er lagret." : "Føringen er lagret: " + t(res.timer) + " på " + (Store.sak(res.sakId) || {}).saksnr + (res.kmLagret ? " + " + tTall(res.kmLagret.km) + " km (" + kr(res.kmLagret.belop) + ")" : "") + ".", "ok");
       }
     }));
     h = aapneDialog({ tittel: "Før timer", innhold: skjema, klasse: "dialog-foring" });
@@ -528,7 +587,8 @@
     }
     var h;
     var slett = el("button", { type: "button", class: "knapp tekst fare", onclick: async function () {
-      var ok = await bekreft({ tittel: erUtlegg ? "Slette utlegget?" : "Slette føringen?", tekst: (Store.sak(linje.sakId) || {}).saksnr + " · " + dato(linje.dato) + " · " + (erUtlegg ? kr(linje.belop) : t(linje.timer)) + (linje.beskrivelse ? " – " + linje.beskrivelse : ""), ok: "Slett", farlig: true });
+      var harKm = !erUtlegg && Store.data().utlegg.some(function (u) { return u.timeId === linje.id && !Store.erLast(u); });
+      var ok = await bekreft({ tittel: erUtlegg ? "Slette utlegget?" : "Slette føringen?", tekst: (Store.sak(linje.sakId) || {}).saksnr + " · " + dato(linje.dato) + " · " + (erUtlegg ? kr(linje.belop) : t(linje.timer)) + (linje.beskrivelse ? " – " + linje.beskrivelse : "") + (harKm ? ". Kjøringen som ble ført sammen med timen slettes også." : ""), ok: "Slett", farlig: true });
       if (!ok) return;
       try {
         if (erUtlegg) await Store.slettUtlegg(linje.id); else await Store.slettTime(linje.id);
@@ -815,7 +875,7 @@
     var listeOmr = el("div", { class: "foringsliste" });
 
     var skjema = foringsskjema({ vedLagret: function (res, type) {
-      toast(type === "utlegg" ? "Utlegget er lagret." : "Føringen er lagret: " + t(res.timer) + ".", "ok");
+      toast(type === "utlegg" ? "Utlegget er lagret." : "Føringen er lagret: " + t(res.timer) + (res.kmLagret ? " + " + tTall(res.kmLagret.km) + " km (" + kr(res.kmLagret.belop) + ")" : "") + ".", "ok");
       skjema.fokuser();
     } });
 
@@ -1643,7 +1703,7 @@
     var i = Store.innst();
     var mottaker = i.mottakerNavn || "mottakeren";
     var steg = [
-      ["Før timer og utlegg", "På PC eller mobil. Alt lagres i OneDrive under «Timeføring» – ikke i nettleseren."],
+      ["Før timer og utlegg", "På PC eller mobil. Alt lagres i OneDrive under «Timeføring» – ikke i nettleseren. Kjøring føres i km og faktureres etter statens sats (med mva)."],
       ["Løpende fil i OneDrive", "Timeføring › Til regnskap › Faktureringsgrunnlag.xlsx oppdateres automatisk med alle ufakturerte linjer."],
       ["Sendes automatisk til View", "Annenhver mandag kl. 07:00 sender flyten i Microsoft 365 fila til " + mottaker + " hos View og flytter den til Timeføring › Sendt. Neste gang: " + sendeTidTekst(Store.nesteSending()) + "."],
       ["Linjene låses", "Linjene som var med i fila merkes «Sendt» og kan ikke endres. Nye føringer havner i neste periode."]

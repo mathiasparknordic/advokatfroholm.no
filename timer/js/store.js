@@ -587,11 +587,20 @@
       if (t && !erUfakturert(t, d)) throw Valideringsfeil("Linjen er sendt til regnskap og kan ikke slettes.");
       d.timer = d.timer.filter(function (x) { return x.id !== id; });
       d.batcher.forEach(function (b) { if (!b.sendt) b.timeIder = (b.timeIder || []).filter(function (x) { return x !== id; }); });
+      // Kjøring ført sammen med timen slettes også (hvis ikke sendt).
+      var kmIder = d.utlegg.filter(function (u) { return u.timeId === id && erUfakturert(u, d); }).map(function (u) { return u.id; });
+      if (kmIder.length) {
+        d.utlegg = d.utlegg.filter(function (u) { return kmIder.indexOf(u.id) < 0; });
+        d.batcher.forEach(function (b) { if (!b.sendt) b.utleggIder = (b.utleggIder || []).filter(function (x) { return kmIder.indexOf(x) < 0; }); });
+      }
     });
   }
 
   function leggTilUtlegg(u) {
     var ny = { id: nyId("u"), sakId: u.sakId, dato: u.dato, beskrivelse: String(u.beskrivelse || "").trim(), belop: rund2(u.belop), mvaPliktig: !!u.mvaPliktig, batchId: null };
+    // Kjøregodtgjørelse: antall km og satsen som ble brukt lagres på linja.
+    if (u.km != null && u.km !== "") { ny.km = Number(u.km); ny.kmSats = Number(u.kmSats); }
+    if (u.timeId) ny.timeId = u.timeId;
     sjekkUtlegg(ny);
     return endre(function (d) { d.utlegg.push(ny); return ny; });
   }

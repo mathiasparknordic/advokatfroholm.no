@@ -713,3 +713,7 @@ kbd { font: inherit; font-size: 11px; font-weight: 600; border: 1px solid curren
 .opphav-sidenav { padding: 12px 24px 4px; color: rgba(255,255,255,.4); }
 .opphav-login { text-align: center; color: rgba(255,255,255,.35); margin-top: 8px; }
 .opphav-mer { padding: 16px 4px 0; color: var(--demp, #6B6B6B); border-top: 1px solid var(--linje); }
+
+/* Kjøregodtgjørelse */
+.felt-km { max-width: 420px; }
+.km-info { margin: 6px 0 0; font-size: 13px; color: var(--gronn); font-variant-numeric: tabular-nums; }
