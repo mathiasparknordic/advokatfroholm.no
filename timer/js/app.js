@@ -661,6 +661,13 @@
     if (!i.mottakerEpost) {
       varselOmr.appendChild(el("button", { type: "button", class: "chip chip-advarsel chip-knapp", onclick: function () { gaaTil("innst"); } }, ikon("advarsel"), "Mangler e-post til View"));
     }
+    if (!i.sendingAktiv) {
+      varselOmr.appendChild(el("button", { type: "button", class: "chip chip-advarsel chip-knapp", onclick: function () { gaaTil("innst"); } }, ikon("advarsel"), "Automatisk sending er av"));
+    }
+    var uteblitt = uteblittSending();
+    if (uteblitt) {
+      varselOmr.appendChild(el("button", { type: "button", class: "chip chip-advarsel chip-knapp", title: "Det ligger timer/utlegg fra før " + dato(uteblitt) + " som ikke er sendt til regnskap. Send manuelt fra «Til regnskap».", onclick: function () { gaaTil("faktura"); } }, ikon("advarsel"), "Sendingen " + dato(uteblitt) + " gikk ikke – send manuelt"));
+    }
     var fs = Store.filStatus();
     if (fs.feil) varselOmr.appendChild(chip("Grunnlaget ble ikke oppdatert", "advarsel", fs.feil));
   }
@@ -758,6 +765,27 @@
     var g = null;
     try { g = Store.grunnlag(); } catch (e) { console.error(e); }
     return g;
+  }
+
+  /**
+   * Forrige planlagte sendedato hvis den ser ut til å ha uteblitt: sending er på,
+   * datoen er passert (med to timers margin etter kl. 07), ingenting er arkivert i
+   * Sendt/ siden, og det finnes usendte linjer datert før den dagen. Ellers null.
+   */
+  function uteblittSending() {
+    var i = Store.innst();
+    if (!i.sendingAktiv || !i.mottakerEpost) return null; // dekkes av egne varsler
+    var iv = parseInt(i.intervallDager, 10) || 14;
+    var forrige = Store.leggTilDager(Store.nesteSending(), -iv);
+    var anker = /^\d{4}-\d{2}-\d{2}$/.test(i.nesteSending || "") ? i.nesteSending : null;
+    if (!anker || forrige < anker) return null;
+    var idag = Store.idag();
+    if (forrige > idag || (forrige === idag && new Date().getHours() < 9)) return null;
+    var sist = sistSendtDato();
+    if (sist && sist >= forrige) return null;
+    var u = Store.ufakturerte();
+    var gamle = u.timer.concat(u.utlegg).some(function (x) { return x.dato && x.dato < forrige; });
+    return gamle ? forrige : null;
   }
 
   function sistSendtDato() {
@@ -1024,7 +1052,8 @@
             el("div", { class: "kunde-id" },
               el("p", { class: "kunde-nr" }, "Kundenr. " + k.kundenr),
               el("h3", null, k.navn),
-              el("p", { class: "kunde-info" }, [k.orgnr ? "Org.nr. " + Brreg.formaterOrgnr(k.orgnr) : "Uten org.nr.", k.kontaktperson, k.fakturaEpost || k.epost].filter(Boolean).join(" · "))),
+              el("p", { class: "kunde-info" }, [k.orgnr ? "Org.nr. " + Brreg.formaterOrgnr(k.orgnr) : "Uten org.nr.", k.kontaktperson, k.fakturaEpost || k.epost].filter(Boolean).join(" · ")),
+              k.fakturaadresse ? el("p", { class: "kunde-info" }, k.fakturaadresse) : el("p", { class: "kunde-info" }, chip("Mangler adresse", "advarsel"))),
             el("div", { class: "kunde-handling" },
               el("button", { type: "button", class: "knapp tekst", "aria-label": "Ny sak for " + k.navn, onclick: function () { sakDialog(null, k.id); } }, ikon("pluss", "ikon-liten"), "Ny sak"),
               el("button", { type: "button", class: "knapp tekst", "aria-label": "Rediger kunde " + k.navn, onclick: function () { kundeDialog(k); } }, ikon("rediger", "ikon-liten"), "Rediger kunde"))),
@@ -1046,11 +1075,37 @@
         return;
       }
       erstatt(listeOmr, blokker);
+      var mangler = utenAdresse().length;
+      adresseKnapp.hidden = !mangler;
+      adresseKnapp.textContent = "Hent manglende adresser (" + mangler + ")";
     }
+
+    // Kunder med org.nr., men uten fakturaadresse – kan hentes fra Brønnøysund.
+    function utenAdresse() {
+      return Store.data().kunder.filter(function (k) { return k.orgnr && Brreg.gyldigOrgnr(k.orgnr) && !String(k.fakturaadresse || "").trim(); });
+    }
+    var adresseKnapp = el("button", { type: "button", class: "knapp sekundaer", hidden: true, onclick: async function () {
+      var liste = utenAdresse();
+      if (!liste.length) return;
+      adresseKnapp.disabled = true;
+      var ok = 0, ingen = 0, feil = 0;
+      for (var n = 0; n < liste.length; n++) {
+        adresseKnapp.textContent = "Henter " + (n + 1) + " av " + liste.length + " …";
+        try {
+          var e = await Brreg.oppslag(liste[n].orgnr);
+          if (e && e.fakturaadresse) { await Store.endreKunde(liste[n].id, { fakturaadresse: e.fakturaadresse }); ok++; }
+          else ingen++;
+        } catch (err) { feil++; }
+      }
+      adresseKnapp.disabled = false;
+      tegn();
+      toast(ok + " adresse" + (ok === 1 ? "" : "r") + " hentet fra Brønnøysund." + (ingen ? " " + ingen + " uten registrert adresse." : "") + (feil ? " " + feil + " feilet – prøv igjen." : ""), feil ? "feil" : "ok");
+    } }, "Hent manglende adresser");
 
     node.appendChild(el("div", { class: "verktoy" },
       sokF, avsl,
       el("div", { class: "knapperad" },
+        adresseKnapp,
         el("button", { type: "button", class: "knapp sekundaer", onclick: function () { kundeDialog(null); } }, "Ny kunde"),
         el("button", { type: "button", class: "knapp", onclick: function () { sakDialog(null); } }, "Ny sak"))));
     node.appendChild(listeOmr);
@@ -1071,7 +1126,11 @@
       return el("div", { class: "brreg-enhet" + (e.advarsler.length ? " har-advarsel" : "") },
         el("p", { class: "brreg-tittel" }, ikon(e.advarsler.length ? "advarsel" : "sok", "ikon-liten"), "Brønnøysundregistrene"),
         el("p", { class: "brreg-navn" }, e.navn || "(uten navn)", e.orgform ? el("span", { class: "chip chip-noytral" }, e.orgform) : null, e.kilde === "underenhet" ? el("span", { class: "chip chip-noytral" }, "Underenhet") : null),
-        el("p", { class: "brreg-detalj" }, "Org.nr. " + Brreg.formaterOrgnr(e.orgnr) + (e.fakturaadresse ? " · " + e.fakturaadresse : "")),
+        el("p", { class: "brreg-detalj" }, "Org.nr. " + Brreg.formaterOrgnr(e.orgnr) + (e.orgformNavn ? " · " + e.orgformNavn : "")),
+        e.postadresse && e.forretningsadresse && e.postadresse !== e.forretningsadresse
+          ? [el("p", { class: "brreg-detalj" }, "Postadresse (brukt som fakturaadresse): " + e.postadresse),
+             el("p", { class: "brreg-detalj" }, "Forretningsadresse: " + e.forretningsadresse)]
+          : (e.fakturaadresse ? el("p", { class: "brreg-detalj" }, "Adresse: " + e.fakturaadresse) : el("p", { class: "brreg-detalj" }, "Ingen adresse registrert i Brønnøysund.")),
         e.advarsler.length ? el("ul", { class: "brreg-advarsler" }, e.advarsler.map(function (a) { return el("li", null, a); })) : null);
     }
     async function slaaOpp(auto) {
@@ -1115,7 +1174,102 @@
       }
     }
     node.hidden = true;
-    return { node: node, slaaOpp: slaaOpp, nullstill: function () { teller++; tom(node); node.hidden = true; } };
+    return {
+      node: node, slaaOpp: slaaOpp,
+      velg: function (e) { teller++; vis(enhetVisning(e)); o.fyll(e, true); },
+      nullstill: function () { teller++; tom(node); node.hidden = true; }
+    };
+  }
+
+  /**
+   * Søk mens du skriver: viser treff fra Enhetsregisteret under navnefeltet.
+   * Velges et treff, kalles velg(enhet). Tastatur: pil opp/ned, Enter, Esc.
+   * Skrives 9 siffer i navnefeltet, slås org.nr. opp direkte.
+   */
+  function brregAutofullfor(input, velg) {
+    var liste = el("ul", { class: "ac-liste", role: "listbox", id: uid("ac") });
+    liste.hidden = true;
+    var treff = [], aktiv = -1, tidtaker = null, teller = 0, sistSok = "";
+    input.setAttribute("role", "combobox");
+    input.setAttribute("aria-autocomplete", "list");
+    input.setAttribute("aria-expanded", "false");
+    input.setAttribute("aria-controls", liste.id);
+    function lukk() { liste.hidden = true; aktiv = -1; input.setAttribute("aria-expanded", "false"); input.removeAttribute("aria-activedescendant"); }
+    function marker(i) {
+      aktiv = i;
+      Array.prototype.forEach.call(liste.children, function (li, n) { li.classList.toggle("aktiv", n === i); li.setAttribute("aria-selected", n === i ? "true" : "false"); });
+      if (i >= 0 && liste.children[i]) { input.setAttribute("aria-activedescendant", liste.children[i].id); liste.children[i].scrollIntoView({ block: "nearest" }); }
+    }
+    function velgNr(i) { var e = treff[i]; if (!e) return; lukk(); sistSok = penNavn(e.navn); velg(e); }
+    function tegn(melding) {
+      tom(liste);
+      if (melding) {
+        liste.appendChild(el("li", { class: "ac-melding", role: "presentation" }, melding));
+      } else {
+        treff.forEach(function (e, n) {
+          var sted = (e.forretningsadresse || e.postadresse || "").split(", ").slice(-1)[0];
+          var li = el("li", { id: liste.id + "-" + n, role: "option", class: "ac-valg", "aria-selected": "false" },
+            el("strong", null, penNavn(e.navn)),
+            el("span", null, [Brreg.formaterOrgnr(e.orgnr), e.orgform, sted].filter(Boolean).join(" · ")),
+            e.advarsler.length ? el("span", { class: "ac-varsel" }, e.advarsler[0]) : null);
+          li.addEventListener("mousedown", function (ev) { ev.preventDefault(); velgNr(n); });
+          liste.appendChild(li);
+        });
+      }
+      liste.hidden = false;
+      input.setAttribute("aria-expanded", "true");
+      aktiv = -1;
+    }
+    async function sok(q) {
+      var mitt = ++teller;
+      try {
+        var nr = Brreg.vask(q);
+        var res;
+        if (/^\d{9}$/.test(q.replace(/\s/g, ""))) {
+          if (!Brreg.gyldigOrgnr(nr)) { treff = []; tegn("Ugyldig org.nr."); return; }
+          var en = await Brreg.oppslag(nr);
+          res = en ? [en] : [];
+        } else {
+          res = await Brreg.sok(q, 8);
+        }
+        if (mitt !== teller || document.activeElement !== input) return;
+        treff = res;
+        if (!treff.length) tegn("Ingen treff i Brønnøysund. Privatpersoner finnes ikke der, så fyll inn adressen selv.");
+        else tegn();
+      } catch (err) {
+        if (mitt !== teller) return;
+        treff = []; tegn("Fikk ikke kontakt med Brønnøysund. Fyll inn manuelt.");
+      }
+    }
+    input.addEventListener("input", function () {
+      clearTimeout(tidtaker);
+      var q = input.value.replace(/\s*\((demo|eksempel)\)\s*$/i, "").trim();
+      if (q.length < 3 || q === sistSok) { teller++; lukk(); return; }
+      tidtaker = setTimeout(function () { sok(q); }, 300);
+    });
+    input.addEventListener("keydown", function (e) {
+      if (liste.hidden || !treff.length) { if (e.key === "Escape" && !liste.hidden) { e.preventDefault(); e.stopPropagation(); lukk(); } return; }
+      if (e.key === "ArrowDown") { e.preventDefault(); marker(Math.min(treff.length - 1, aktiv + 1)); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); marker(Math.max(0, aktiv - 1)); }
+      else if (e.key === "Enter" && aktiv >= 0) { e.preventDefault(); velgNr(aktiv); }
+      else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); lukk(); }
+    });
+    input.addEventListener("blur", function () { teller++; clearTimeout(tidtaker); setTimeout(lukk, 120); });
+    return { liste: liste };
+  }
+
+  /** Legger autofullfør-lista rett under input i et felt (fra felt()). */
+  function medAutofullfor(feltEl, velg) {
+    var ac = brregAutofullfor(feltEl.input, velg);
+    var omslag = el("div", { class: "ac" });
+    feltEl.input.parentNode.insertBefore(omslag, feltEl.input);
+    omslag.appendChild(feltEl.input);
+    omslag.appendChild(ac.liste);
+    if (!feltEl.querySelector(".felt-hint")) {
+      var hint = el("p", { class: "felt-hint" }, "Skriv firmanavn eller org.nr., så søkes Brønnøysund automatisk.");
+      omslag.insertAdjacentElement("afterend", hint);
+    }
+    return feltEl;
   }
 
   function penNavn(n) {
@@ -1147,6 +1301,8 @@
       }
     });
     var hent = el("button", { type: "button", class: "knapp sekundaer liten", onclick: function () { bb.slaaOpp(false); } }, "Hent fra Brønnøysund");
+    medAutofullfor(f.navn, function (e) { bb.velg(e); });
+    f.orgnr.input.addEventListener("change", function () { if (Brreg.gyldigOrgnr(f.orgnr.input.value)) bb.slaaOpp(true); });
     var form = el("form", { class: "skjema", novalidate: true },
       el("div", { class: "grid-2" }, f.navn, el("div", { class: "felt-med-knapp" }, f.orgnr, hent)),
       bb.node,
@@ -1380,6 +1536,7 @@
       var hent = el("button", { type: "button", class: "knapp sekundaer liten", onclick: function () { bb.slaaOpp(false); } }, "Hent fra Brønnøysund");
       f.orgnr.input.addEventListener("change", function () { tegnKundevalg(); if (Brreg.gyldigOrgnr(f.orgnr.input.value)) bb.slaaOpp(true); });
       f.navn.input.addEventListener("change", tegnKundevalg);
+      medAutofullfor(f.navn, function (e) { bb.velg(e); });
 
       kundeFelter.appendChild(el("div", { class: "grid-3" }, f.kundenr, f.kontaktperson, f.telefon));
       kundeFelter.appendChild(el("div", { class: "grid-2" }, f.epost, f.fakturaEpost));
