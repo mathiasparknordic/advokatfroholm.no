@@ -196,7 +196,7 @@ a.kanal:hover { background: var(--gronn-2); color: var(--hvit); }
 @media (max-width: 900px) { .spesial { grid-template-columns: 1fr; gap: 20px; padding: 36px 28px; } }
 
 /* Artikler */
-.artikler { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.artikler { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .artikkel { display: flex; flex-direction: column; border: 1px solid var(--linje); border-top: 3px solid var(--messing); padding: 32px; text-decoration: none; color: var(--grafitt); transition: border-color .15s, box-shadow .15s; }
 .artikkel:hover { border-color: var(--gronn); border-top-color: var(--messing); box-shadow: 0 8px 24px rgba(31,61,52,.08); color: var(--grafitt); }
 .artikkel .meta { font-size: 12px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: #8A8A8A; margin-bottom: 14px; }
@@ -204,3 +204,19 @@ a.kanal:hover { background: var(--gronn-2); color: var(--hvit); }
 .artikkel .les { margin-top: auto; font-weight: 600; font-size: 15px; color: var(--gronn); }
 .artikkel:hover .les { color: var(--messing); }
 @media (max-width: 900px) { .artikler { grid-template-columns: 1fr; } }
+
+/* Artikkelside */
+.artikkelside { padding-top: 56px; }
+.artikkelside .tilbake { margin: 0 0 32px; font-size: 15px; }
+.artikkelside .tilbake a { text-decoration: none; font-weight: 500; }
+.artikkelside h1 { font-size: clamp(30px, 4.4vw, 44px); line-height: 1.15; margin-bottom: 20px; }
+.artikkelside .ingress { margin: 0 0 28px; }
+.byline { border-top: 1px solid var(--linje); border-bottom: 1px solid var(--linje); padding: 18px 0; margin-bottom: 40px; font-size: 15.5px; }
+.byline p { margin: 0; }
+.byline b { color: var(--gronn); font-weight: 600; }
+.byline .kilde { margin-top: 6px; color: #6B6B6B; font-size: 14.5px; }
+.brodtekst p { margin: 0 0 18px; }
+.brodtekst h2 { font-size: 23px; margin: 44px 0 14px; }
+.sitat { margin: 36px 0; padding: 4px 0 4px 24px; border-left: 3px solid var(--messing); font-size: clamp(20px, 2.4vw, 24px); font-weight: 500; line-height: 1.4; color: var(--gronn); }
+.artikkel-cta { margin-top: 56px; background: var(--lys); padding: 32px; display: flex; gap: 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.artikkel-cta p { margin: 0; max-width: 46ch; color: var(--gronn); font-weight: 500; }
