@@ -187,13 +187,13 @@ a.kanal:hover { background: var(--gronn-2); color: var(--hvit); }
 @media (max-width: 600px) { .meny { gap: 12px; } .sprak svg { width: 24px; height: 17px; } }
 
 /* Spesialfelt (OPS) */
-.spesial { display: grid; grid-template-columns: .8fr 1.2fr; gap: 48px; background: var(--gronn); color: rgba(255,255,255,.88); padding: 44px 48px; margin-bottom: 48px; position: relative; }
-.spesial .etikett, .spesial h3 { color: var(--hvit); }
-.spesial .etikett { margin-bottom: 12px; }
-.spesial h3 { font-size: clamp(24px, 2.6vw, 30px); margin: 0; }
-.spesial p { margin: 0 0 12px; }
-.spesial p:last-child { margin-bottom: 0; }
-@media (max-width: 900px) { .spesial { grid-template-columns: 1fr; gap: 20px; padding: 36px 28px; } }
+.spesial { background: var(--gronn); color: rgba(255,255,255,.88); padding: 40px 48px 44px; margin-bottom: 48px; }
+.spesial .etikett { color: var(--hvit); margin-bottom: 24px; }
+.spesial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+.spesial-grid > div { min-width: 0; border-top: 1px solid rgba(255,255,255,.22); padding-top: 18px; }
+.spesial h3 { color: var(--hvit); font-size: 20px; margin: 0 0 10px; }
+.spesial p { margin: 0; font-size: 16px; }
+@media (max-width: 900px) { .spesial { padding: 32px 24px 36px; } .spesial-grid { grid-template-columns: 1fr; gap: 24px; } }
 
 /* Artikler */
 .artikler { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
