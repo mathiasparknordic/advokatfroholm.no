@@ -108,8 +108,11 @@ section { padding: 100px 0; }
 .tjenester { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--linje); border: 1px solid var(--linje); }
 .tjeneste { background: var(--hvit); padding: 36px 32px 40px; position: relative; }
 .tjeneste::before { content: ""; position: absolute; top: 0; left: 32px; width: 28px; height: 3px; background: var(--messing); }
-.tjeneste .nr { font-size: 13px; font-weight: 600; letter-spacing: .2em; color: #8A8A8A; margin-bottom: 18px; display: block; }
+.tjeneste .nr { font-size: 13px; font-weight: 600; letter-spacing: .2em; color: #6B6B6B; margin-bottom: 18px; display: block; }
 .tjeneste p { margin: 0; font-size: 16px; }
+/* Fem kort: det siste fyller resten av raden (3 og 2 kolonner) */
+.tjeneste:last-child:nth-child(5) { grid-column: span 2; }
+.tjeneste:last-child:nth-child(5) p { max-width: 62ch; }
 
 .om { display: grid; grid-template-columns: 1.1fr .9fr; gap: 72px; align-items: start; }
 .om p { margin: 0 0 18px; }
@@ -173,6 +176,7 @@ a.kanal:hover { background: var(--gronn-2); color: var(--hvit); }
   .hero { padding: 72px 0 80px; }
   .hero-hjorne { display: none; }
   .tjenester { grid-template-columns: 1fr; }
+  .tjeneste:last-child:nth-child(5) { grid-column: auto; }
   .tidslinje li { grid-template-columns: 1fr; gap: 2px; }
   .bunn-grid { grid-template-columns: 1fr; gap: 32px; }
 }
@@ -186,7 +190,7 @@ a.kanal:hover { background: var(--gronn-2); color: var(--hvit); }
 .sprak svg { width: 26px; height: 18px; display: block; box-shadow: 0 0 0 1px rgba(0,0,0,.08); }
 @media (max-width: 600px) { .meny { gap: 12px; } .sprak svg { width: 24px; height: 17px; } }
 
-/* Spesialfelt (OPS) */
+/* Spesialfelt */
 .spesial { background: var(--gronn); color: rgba(255,255,255,.88); padding: 40px 48px 44px; margin-bottom: 48px; }
 .spesial .etikett { color: var(--hvit); margin-bottom: 24px; }
 .spesial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
@@ -199,7 +203,7 @@ a.kanal:hover { background: var(--gronn-2); color: var(--hvit); }
 .artikler { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .artikkel { display: flex; flex-direction: column; border: 1px solid var(--linje); border-top: 3px solid var(--messing); padding: 32px; text-decoration: none; color: var(--grafitt); transition: border-color .15s, box-shadow .15s; }
 .artikkel:hover { border-color: var(--gronn); border-top-color: var(--messing); box-shadow: 0 8px 24px rgba(31,61,52,.08); color: var(--grafitt); }
-.artikkel .meta { font-size: 12px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: #8A8A8A; margin-bottom: 14px; }
+.artikkel .meta { font-size: 12px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: #6B6B6B; margin-bottom: 14px; }
 .artikkel p { margin: 0 0 20px; font-size: 16px; }
 .artikkel .les { margin-top: auto; font-weight: 600; font-size: 15px; color: var(--gronn); }
 .artikkel:hover .les { color: var(--messing); }
