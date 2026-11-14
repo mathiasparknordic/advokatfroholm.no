@@ -46,10 +46,13 @@
     </a>
     <nav class="meny" aria-label="Hovedmeny">
       <div class="sprak" role="group" aria-label="Språk / Language"><a href="/" hreflang="nb" lang="nb" title="Norsk" aria-label="Norsk" aria-current="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M6 0h4v16H6zM0 6h22v4H0z" fill="#fff"/><path d="M7 0h2v16H7zM0 7h22v2H0z" fill="#00205B"/></svg></a><a href="/en/#articles" hreflang="en" lang="en" title="English" aria-label="English"><svg viewBox="0 0 60 30" aria-hidden="true" preserveAspectRatio="none"><clipPath id="uk-t"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30m0-30L0 30" clip-path="url(#uk-t)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></svg></a></div>
-      <a href="/#tjenester">Tjenester</a>
-      <a href="/#om">Om Geir</a>
-      <a href="/#artikler">Artikler</a>
+      <div class="meny-lenker" id="meny-lenker">
+        <a href="/#tjenester">Tjenester</a>
+        <a href="/#om">Om Geir</a>
+        <a href="/#artikler">Artikler</a>
+      </div>
       <a class="knapp" href="/#kontakt">Kontakt</a>
+      <button class="meny-knapp" type="button" aria-label="Meny" aria-expanded="false" aria-controls="meny-lenker"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
     </nav>
   </div>
 </header>
@@ -104,7 +107,7 @@
     <div class="bunn-grid">
       <div>
         <img src="/assets/logo-negativ.svg" alt="Advokat Geir Frøholm AS" width="500" height="148">
-        <p>Advokat Geir Frøholm AS<br>Org.nr. 929 196 325</p>
+        <p>Advokat Geir Frøholm AS<br>Org.nr. 929 196 325 MVA</p>
       </div>
       <div>
         <h4>Kontakt</h4>
@@ -114,7 +117,7 @@
       </div>
       <div>
         <h4>Informasjon</h4>
-        <p>Advokatvirksomhet i Norge reguleres av advokatloven og advokatforskriften, og står under tilsyn av <a href="https://tilsynet.no" rel="noopener">Advokattilsynet</a>.</p>
+        <p>Geir Frøholm har norsk advokatbevilling. Advokatvirksomhet i Norge reguleres av advokatloven og advokatforskriften, og står under tilsyn av <a href="https://tilsynet.no" rel="noopener">Advokattilsynet</a>. Advokater er underlagt reglene for god advokatskikk.</p>
         <p><a href="/personvern.html">Personvernerklæring</a></p>
       </div>
     </div>
@@ -126,5 +129,15 @@
 </footer>
 
 <script>document.getElementById("aar").textContent = new Date().getFullYear();</script>
+<script>
+(function () {
+  var topp = document.querySelector(".topp"), knapp = document.querySelector(".meny-knapp");
+  if (!topp || !knapp) return;
+  function sett(aapen) { topp.classList.toggle("aapen", aapen); knapp.setAttribute("aria-expanded", aapen ? "true" : "false"); }
+  knapp.addEventListener("click", function () { sett(!topp.classList.contains("aapen")); });
+  document.getElementById("meny-lenker").addEventListener("click", function (e) { if (e.target.closest("a")) sett(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && topp.classList.contains("aapen")) { sett(false); knapp.focus(); } });
+})();
+</script>
 </body>
 </html>
