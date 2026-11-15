@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Advokat Geir Frøholm – planning law, construction and mediation | Lysaker, Norway</title>
-<meta name="description" content="Norwegian lawyer Geir Frøholm advises employers, contractors, consultants and property developers on planning and building law, mediation and alternative dispute resolution, public-private partnerships (PPP), contracts and project follow-up. Office in Lysaker, near Oslo.">
+<title>Advokat Geir Frøholm – planning law and mediation, Lysaker</title>
+<meta name="description" content="Norwegian lawyer near Oslo advising on planning and building law, mediation and ADR, public-private partnerships (PPP) and construction contracts.">
 <link rel="canonical" href="https://advokatfroholm.no/en/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Advokat Geir Frøholm AS">
@@ -12,6 +12,12 @@
 <meta property="og:url" content="https://advokatfroholm.no/en/">
 <meta property="og:image" content="https://advokatfroholm.no/assets/og-image.png">
 <meta property="og:locale" content="en_GB">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Advokat Geir Frøholm AS">
+<meta property="og:site_name" content="Advokat Geir Frøholm AS">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:locale:alternate" content="nb_NO">
 <meta name="theme-color" content="#1F3D34">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -24,24 +30,106 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "LegalService",
-  "name": "Advokat Geir Frøholm AS",
-  "url": "https://advokatfroholm.no/en/",
-  "logo": "https://advokatfroholm.no/assets/icon-512.png",
-  "image": "https://advokatfroholm.no/assets/og-image.png",
-  "telephone": "+47 907 24 655",
-  "email": "geir@advokatfroholm.no",
-  "taxID": "929196325",
-  "areaServed": "Norway",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Strandveien 55",
-    "postalCode": "1366",
-    "addressLocality": "Lysaker",
-    "addressCountry": "NO"
-  },
-  "founder": { "@type": "Person", "name": "Geir Frøholm", "jobTitle": "Lawyer (advokat)" },
-  "knowsAbout": ["Planning and building law", "Mediation", "Alternative dispute resolution", "Public-private partnerships (PPP)", "Construction law", "Real estate law", "Contract law", "Dispute resolution"]
+  "@graph": [
+    {
+      "@type": "LegalService",
+      "@id": "https://advokatfroholm.no/#firma",
+      "name": "Advokat Geir Frøholm AS",
+      "url": "https://advokatfroholm.no/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://advokatfroholm.no/assets/icon-512.png",
+        "width": 512,
+        "height": 512
+      },
+      "image": "https://advokatfroholm.no/assets/og-image.png",
+      "description": "Norwegian lawyer advising on planning and building law, mediation and alternative dispute resolution, public-private partnerships (PPP) and construction.",
+      "telephone": "+47 907 24 655",
+      "email": "geir@advokatfroholm.no",
+      "taxID": "929196325",
+      "vatID": "NO929196325MVA",
+      "areaServed": {
+        "@type": "Country",
+        "name": "Norway"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Strandveien 55",
+        "postalCode": "1366",
+        "addressLocality": "Lysaker",
+        "addressRegion": "Akershus",
+        "addressCountry": "NO"
+      },
+      "founder": {
+        "@id": "https://advokatfroholm.no/#geir"
+      },
+      "knowsAbout": [
+        "Planning and building law",
+        "Development agreements",
+        "Mediation",
+        "Project-integrated mediation (PRIME)",
+        "Alternative dispute resolution",
+        "Public-private partnerships (PPP)",
+        "Construction law",
+        "Real estate law",
+        "Contract law"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Practice areas",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Planning and building law",
+              "url": "https://advokatfroholm.no/plan-og-bygningsrett.html"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Mediation and alternative dispute resolution",
+              "url": "https://advokatfroholm.no/mekling.html"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Public-private partnerships (PPP)",
+              "url": "https://advokatfroholm.no/ops.html"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://advokatfroholm.no/#geir",
+      "name": "Geir Frøholm",
+      "jobTitle": "Lawyer (advokat)",
+      "url": "https://advokatfroholm.no/#om",
+      "worksFor": {
+        "@id": "https://advokatfroholm.no/#firma"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://advokatfroholm.no/#nettsted",
+      "url": "https://advokatfroholm.no/",
+      "name": "Advokat Geir Frøholm",
+      "alternateName": "Advokat Geir Frøholm AS",
+      "inLanguage": [
+        "nb",
+        "en"
+      ],
+      "publisher": {
+        "@id": "https://advokatfroholm.no/#firma"
+      }
+    }
+  ]
 }
 </script>
 </head>
@@ -93,16 +181,19 @@
       <p class="etikett">Specialist areas</p>
       <div class="spesial-grid">
         <div>
-          <h3>Planning and building law</h3>
+          <h3><a href="/plan-og-bygningsrett.html" hreflang="nb">Planning and building law</a></h3>
           <p>Zoning, development agreements and phasing requirements – particularly in infrastructure and property development.</p>
+          <a class="les-mer" href="/plan-og-bygningsrett.html" hreflang="nb">Read more (Norwegian) →</a>
         </div>
         <div>
-          <h3>Mediation and alternative dispute resolution</h3>
+          <h3><a href="/mekling.html" hreflang="nb">Mediation and alternative dispute resolution</a></h3>
           <p>Certified mediator. Out-of-court mediation, PRIME (project-integrated mediation) and PRIME Light – resolving disagreements early, before they become costly litigation.</p>
+          <a class="les-mer" href="/mekling.html" hreflang="nb">Read more (Norwegian) →</a>
         </div>
         <div>
-          <h3>Public-private partnerships (PPP)</h3>
+          <h3><a href="/ops.html" hreflang="nb">Public-private partnerships (PPP)</a></h3>
           <p>Long experience of PPP projects in infrastructure and municipal public buildings – from choice of model and contract structure through execution, operation and any disputes.</p>
+          <a class="les-mer" href="/ops.html" hreflang="nb">Read more (Norwegian) →</a>
         </div>
       </div>
     </div>
@@ -222,17 +313,17 @@
   <div class="wrap">
     <div class="bunn-grid">
       <div>
-        <img src="/assets/logo-negativ.svg" alt="Advokat Geir Frøholm AS" width="500" height="148">
+        <img src="/assets/logo-negativ.svg" alt="Advokat Geir Frøholm AS" width="500" height="148" loading="lazy">
         <p>Advokat Geir Frøholm AS<br>Org. no. 929 196 325 MVA</p>
       </div>
       <div>
-        <h4>Contact</h4>
+        <p class="bunn-tittel">Contact</p>
         <p><a href="tel:+4790724655">+47 907 24 655</a></p>
         <p><a href="mailto:geir@advokatfroholm.no">geir@advokatfroholm.no</a></p>
         <p>Strandveien 55, 1366 Lysaker, Norway</p>
       </div>
       <div>
-        <h4>Information</h4>
+        <p class="bunn-tittel">Information</p>
         <p>Geir Frøholm is licensed to practise law in Norway (advokatbevilling). Legal practice in Norway is regulated by the Norwegian Lawyers Act (advokatloven) and Regulations, and supervised by <a href="https://tilsynet.no" rel="noopener">Advokattilsynet</a> (the Norwegian Supervisory Authority for Legal Practice). Lawyers are bound by the Norwegian rules of professional conduct (regler for god advokatskikk).</p>
         <p><a href="/en/privacy.html">Privacy policy</a></p>
       </div>

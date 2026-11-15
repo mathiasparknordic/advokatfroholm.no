@@ -82,7 +82,7 @@ h3 { font-size: 20px; margin-bottom: 8px; }
 .knapp:hover { background: var(--gronn-2); border-color: var(--gronn-2); }
 .knapp.lys { background: transparent; color: var(--hvit) !important; border-color: rgba(255,255,255,.6); }
 .knapp.lys:hover { background: var(--hvit); color: var(--gronn) !important; }
-.knapp.messing { background: var(--messing); border-color: var(--messing); color: var(--gronn) !important; }
+.knapp.messing { background: var(--messing); border-color: var(--messing); color: #172E27 !important; }
 .knapp.messing:hover { background: #C29F6C; border-color: #C29F6C; }
 
 /* Hero */
@@ -147,7 +147,7 @@ a.kanal:hover { background: var(--gronn-2); color: var(--hvit); }
 .bunn { background: #172E27; color: rgba(255,255,255,.72); padding: 56px 0 40px; font-size: 14px; }
 .bunn-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 48px; }
 .bunn img { width: 280px; height: auto; margin: -12px 0 12px -14px; }
-.bunn h4 { color: var(--hvit); font-size: 12px; letter-spacing: .25em; text-transform: uppercase; margin: 0 0 12px; font-weight: 600; }
+.bunn .bunn-tittel { color: var(--hvit); font-size: 12px; letter-spacing: .25em; text-transform: uppercase; margin: 0 0 12px; font-weight: 600; }
 .bunn p { margin: 0 0 8px; }
 .bunn a { color: rgba(255,255,255,.9); }
 .bunn .smaa { border-top: 1px solid rgba(255,255,255,.12); margin-top: 40px; padding-top: 24px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
@@ -232,3 +232,20 @@ a.kanal:hover { background: var(--gronn-2); color: var(--hvit); }
 .sitat { margin: 36px 0; padding: 4px 0 4px 24px; border-left: 3px solid var(--messing); font-size: clamp(20px, 2.4vw, 24px); font-weight: 500; line-height: 1.4; color: var(--gronn); }
 .artikkel-cta { margin-top: 56px; background: var(--lys); padding: 32px; display: flex; gap: 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
 .artikkel-cta p { margin: 0; max-width: 46ch; color: var(--gronn); font-weight: 500; }
+
+/* Lenker i spesialfelt */
+.spesial h3 a { color: var(--hvit); text-decoration: none; }
+.spesial h3 a:hover { color: #E6D3B3; text-decoration: underline; }
+.spesial .les-mer { display: inline-block; margin-top: 14px; color: #E6D3B3; font-weight: 600; font-size: 15px; text-decoration: none; }
+.spesial .les-mer:hover { color: var(--hvit); text-decoration: underline; }
+
+/* Fagsider */
+.fagside .tilbake { font-size: 14.5px; color: #6B6B6B; }
+.fagside .tilbake a { text-decoration: none; }
+.faq { border-top: 1px solid var(--linje); padding: 14px 0; }
+.faq:last-of-type { border-bottom: 1px solid var(--linje); }
+.faq summary { cursor: pointer; font-weight: 600; color: var(--gronn); list-style-position: outside; }
+.faq p { margin: 10px 0 0; }
+.relatert { padding-left: 20px; margin: 0; }
+.relatert li { margin: 0 0 8px; }
+.relatert-lenke { margin-top: 24px; }

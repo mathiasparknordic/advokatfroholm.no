@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Advokat Geir Frøholm – plan- og bygningsrett, entreprise og mekling | Lysaker</title>
-<meta name="description" content="Advokat Geir Frøholm bistår byggherrer, entreprenører, rådgivere og eiendomsutviklere med plan- og bygningsrett, mekling og alternativ tvisteløsning, offentlig-privat samarbeid (OPS), kontrakter og prosjektoppfølging. Kontor på Lysaker.">
+<title>Advokat Geir Frøholm – plan- og bygningsrett og mekling, Lysaker</title>
+<meta name="description" content="Advokat på Lysaker for byggherrer, entreprenører og utviklere: plan- og bygningsrett, mekling og alternativ tvisteløsning, OPS og kontrakter.">
 <link rel="canonical" href="https://advokatfroholm.no/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Advokat Geir Frøholm AS">
@@ -12,6 +12,12 @@
 <meta property="og:url" content="https://advokatfroholm.no/">
 <meta property="og:image" content="https://advokatfroholm.no/assets/og-image.png">
 <meta property="og:locale" content="nb_NO">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Advokat Geir Frøholm AS">
+<meta property="og:site_name" content="Advokat Geir Frøholm AS">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:locale:alternate" content="en_GB">
 <meta name="theme-color" content="#1F3D34">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -24,24 +30,107 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "LegalService",
-  "name": "Advokat Geir Frøholm AS",
-  "url": "https://advokatfroholm.no/",
-  "logo": "https://advokatfroholm.no/assets/icon-512.png",
-  "image": "https://advokatfroholm.no/assets/og-image.png",
-  "telephone": "+47 907 24 655",
-  "email": "geir@advokatfroholm.no",
-  "taxID": "929196325",
-  "areaServed": "Norge",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Strandveien 55",
-    "postalCode": "1366",
-    "addressLocality": "Lysaker",
-    "addressCountry": "NO"
-  },
-  "founder": { "@type": "Person", "name": "Geir Frøholm", "jobTitle": "Advokat" },
-  "knowsAbout": ["Plan- og bygningsrett", "Mekling", "Alternativ tvisteløsning", "Offentlig-privat samarbeid (OPS)", "Entrepriserett", "Eiendomsrett", "Kontraktsrett", "Tvisteløsning"]
+  "@graph": [
+    {
+      "@type": "LegalService",
+      "@id": "https://advokatfroholm.no/#firma",
+      "name": "Advokat Geir Frøholm AS",
+      "url": "https://advokatfroholm.no/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://advokatfroholm.no/assets/icon-512.png",
+        "width": 512,
+        "height": 512
+      },
+      "image": "https://advokatfroholm.no/assets/og-image.png",
+      "description": "Advokat for byggherrer, entreprenører, rådgivere, eiendomsutviklere og kommuner innen plan- og bygningsrett, mekling og alternativ tvisteløsning, OPS og entreprise.",
+      "telephone": "+47 907 24 655",
+      "email": "geir@advokatfroholm.no",
+      "taxID": "929196325",
+      "vatID": "NO929196325MVA",
+      "areaServed": {
+        "@type": "Country",
+        "name": "Norge"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Strandveien 55",
+        "postalCode": "1366",
+        "addressLocality": "Lysaker",
+        "addressRegion": "Akershus",
+        "addressCountry": "NO"
+      },
+      "founder": {
+        "@id": "https://advokatfroholm.no/#geir"
+      },
+      "knowsAbout": [
+        "Plan- og bygningsrett",
+        "Utbyggingsavtaler",
+        "Rekkefølgekrav",
+        "Mekling",
+        "Prosjektintegrert mekling (PRIME)",
+        "Alternativ tvisteløsning",
+        "Offentlig-privat samarbeid (OPS)",
+        "Entrepriserett",
+        "Eiendomsrett",
+        "Kontraktsrett"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Fagområder",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Plan- og bygningsrett",
+              "url": "https://advokatfroholm.no/plan-og-bygningsrett.html"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Mekling og alternativ tvisteløsning",
+              "url": "https://advokatfroholm.no/mekling.html"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Offentlig-privat samarbeid (OPS)",
+              "url": "https://advokatfroholm.no/ops.html"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://advokatfroholm.no/#geir",
+      "name": "Geir Frøholm",
+      "jobTitle": "Advokat",
+      "url": "https://advokatfroholm.no/#om",
+      "worksFor": {
+        "@id": "https://advokatfroholm.no/#firma"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://advokatfroholm.no/#nettsted",
+      "url": "https://advokatfroholm.no/",
+      "name": "Advokat Geir Frøholm",
+      "alternateName": "Advokat Geir Frøholm AS",
+      "inLanguage": [
+        "nb",
+        "en"
+      ],
+      "publisher": {
+        "@id": "https://advokatfroholm.no/#firma"
+      }
+    }
+  ]
 }
 </script>
 </head>
@@ -94,16 +183,19 @@
       <p class="etikett">Spesialfelt</p>
       <div class="spesial-grid">
         <div>
-          <h3>Plan- og bygningsrett</h3>
+          <h3><a href="/plan-og-bygningsrett.html">Plan- og bygningsrett</a></h3>
           <p>Regulering, utbyggingsavtaler og rekkefølgekrav – særlig knyttet til infrastruktur og eiendomsutvikling.</p>
+          <a class="les-mer" href="/plan-og-bygningsrett.html">Les mer →</a>
         </div>
         <div>
-          <h3>Mekling og alternativ tvisteløsning</h3>
+          <h3><a href="/mekling.html">Mekling og alternativ tvisteløsning</a></h3>
           <p>Sertifisert mekler. Utenrettslig mekling, PRIME (prosjektintegrert mekling) og PRIME Light – for å løse uenigheter tidlig, før de blir kostbare rettsprosesser.</p>
+          <a class="les-mer" href="/mekling.html">Les mer →</a>
         </div>
         <div>
-          <h3>Offentlig-privat samarbeid (OPS)</h3>
+          <h3><a href="/ops.html">Offentlig-privat samarbeid (OPS)</a></h3>
           <p>Lang erfaring med OPS-prosjekter innen infrastruktur og kommunale formålsbygg – fra valg av modell og kontraktsstruktur til gjennomføring, drift og eventuelle tvister.</p>
+          <a class="les-mer" href="/ops.html">Les mer →</a>
         </div>
       </div>
     </div>
@@ -223,17 +315,17 @@
   <div class="wrap">
     <div class="bunn-grid">
       <div>
-        <img src="/assets/logo-negativ.svg" alt="Advokat Geir Frøholm AS" width="500" height="148">
+        <img src="/assets/logo-negativ.svg" alt="Advokat Geir Frøholm AS" width="500" height="148" loading="lazy">
         <p>Advokat Geir Frøholm AS<br>Org.nr. 929 196 325 MVA</p>
       </div>
       <div>
-        <h4>Kontakt</h4>
+        <p class="bunn-tittel">Kontakt</p>
         <p><a href="tel:+4790724655">+47 907 24 655</a></p>
         <p><a href="mailto:geir@advokatfroholm.no">geir@advokatfroholm.no</a></p>
         <p>Strandveien 55, 1366 Lysaker</p>
       </div>
       <div>
-        <h4>Informasjon</h4>
+        <p class="bunn-tittel">Informasjon</p>
         <p>Geir Frøholm har norsk advokatbevilling. Advokatvirksomhet i Norge reguleres av advokatloven og advokatforskriften, og står under tilsyn av <a href="https://tilsynet.no" rel="noopener">Advokattilsynet</a>. Advokater er underlagt reglene for god advokatskikk.</p>
         <p><a href="/personvern.html">Personvernerklæring</a></p>
       </div>

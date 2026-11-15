@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-Disallow: /timer/
 Sitemap: https://advokatfroholm.no/sitemap.xml
