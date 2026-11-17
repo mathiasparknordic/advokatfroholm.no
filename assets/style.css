@@ -201,11 +201,11 @@ a.kanal:hover { background: var(--gronn-2); color: var(--hvit); }
 /* Spesialfelt */
 .spesial { background: var(--gronn); color: rgba(255,255,255,.88); padding: 40px 48px 44px; margin-bottom: 48px; }
 .spesial .etikett { color: var(--hvit); margin-bottom: 24px; }
-.spesial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+.spesial-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px 48px; }
 .spesial-grid > div { min-width: 0; border-top: 1px solid rgba(255,255,255,.22); padding-top: 18px; }
 .spesial h3 { color: var(--hvit); font-size: 20px; margin: 0 0 10px; }
 .spesial p { margin: 0; font-size: 16px; }
-@media (max-width: 900px) { .spesial { padding: 32px 24px 36px; } .spesial-grid { grid-template-columns: 1fr; gap: 24px; } }
+@media (max-width: 900px) { .spesial { padding: 32px 24px 36px; } } @media (max-width: 700px) { .spesial-grid { grid-template-columns: 1fr; gap: 24px; } }
 
 /* Artikler */
 .artikler { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
