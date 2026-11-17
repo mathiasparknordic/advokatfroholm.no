@@ -73,8 +73,10 @@
       kopiEpost: "",
       emne: "Faktureringsgrunnlag – Advokat Geir Frøholm AS",
       melding: "Hei,\n\nVedlagt følger faktureringsgrunnlag for perioden.\n\nMed vennlig hilsen\nGeir Frøholm",
+      rytme: "annenhver", // "annenhver" = annenhver mandag kl. 07:00, "maaned" = den 1. i hver måned kl. 07:00
       intervallDager: 14,
-      nesteSending: ANKER, // anker for flytens faste rytme (annenhver mandag kl. 07:00)
+      nesteSending: ANKER, // anker for annenhver-mandag-rytmen
+      betalingsfristDager: 14, // brukes i grunnlaget når saken ikke har egne betalingsbetingelser
       mvaSats: 25,
       sendingAktiv: true
     };
@@ -93,6 +95,9 @@
     var s = standardInnstillinger();
     var ut = Object.assign({}, s, i || {});
     ut.intervallDager = parseInt(ut.intervallDager, 10) || 14;
+    ut.rytme = ut.rytme === "maaned" ? "maaned" : "annenhver";
+    ut.betalingsfristDager = parseInt(ut.betalingsfristDager, 10);
+    if (!(ut.betalingsfristDager >= 0 && ut.betalingsfristDager <= 365)) ut.betalingsfristDager = 14;
     ut.mvaSats = Number(ut.mvaSats);
     if (!isFinite(ut.mvaSats)) ut.mvaSats = 25;
     ut.sendingAktiv = ut.sendingAktiv !== false;
@@ -515,9 +520,17 @@
    * Neste automatiske sending: første dato i rekka anker + n × intervallDager (n ≥ 0) som er ≥ i dag.
    * Er det sendedag og klokka har passert 07:00, gjelder neste dato i rekka.
    */
+  function forsteIMaaned(aar, mnd) { return aar + "-" + pad(mnd) + "-01"; }
   function nesteSending(i, naaTid) {
     i = i || tilstand.innst;
     naaTid = naaTid || new Date();
+    if (i.rytme === "maaned") {
+      var a = naaTid.getFullYear(), m = naaTid.getMonth() + 1;
+      var dagM = datoStr(naaTid);
+      var kand = forsteIMaaned(a, m);
+      if (kand < dagM || (kand === dagM && naaTid.getHours() >= SENDETIME)) { m += 1; if (m > 12) { m = 1; a += 1; } kand = forsteIMaaned(a, m); }
+      return kand;
+    }
     var iv = parseInt(i.intervallDager, 10) || 14;
     var anker = /^\d{4}-\d{2}-\d{2}$/.test(i.nesteSending || "") ? i.nesteSending : ANKER;
     var dag = datoStr(naaTid);
@@ -525,6 +538,17 @@
     if (d < dag) d = leggTilDager(anker, Math.ceil(dagerMellom(anker, dag) / iv) * iv);
     if (d === dag && naaTid.getHours() >= SENDETIME) d = leggTilDager(d, iv);
     return d;
+  }
+  /** Sendedatoen før neste (forrige planlagte sending) i gjeldende rytme. */
+  function forrigeSending(i, naaTid) {
+    i = i || tilstand.innst;
+    var neste = nesteSending(i, naaTid);
+    if (i.rytme === "maaned") {
+      var p = neste.split("-").map(Number), a = p[0], m = p[1] - 1;
+      if (m < 1) { m = 12; a -= 1; }
+      return forsteIMaaned(a, m);
+    }
+    return leggTilDager(neste, -(parseInt(i.intervallDager, 10) || 14));
   }
 
   // ---------------- Validering ----------------
@@ -1064,6 +1088,7 @@
     nullstillDemo: function () { if (backend && backend.nullstill) backend.nullstill(); },
     idag: idag,
     nesteSending: function (i, t) { return nesteSending(i, t); },
+    forrigeSending: function (i, t) { return forrigeSending(i, t); },
     ANKER: ANKER,
     leggTilDager: leggTilDager
   };

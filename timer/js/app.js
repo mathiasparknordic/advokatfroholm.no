@@ -775,9 +775,8 @@
   function uteblittSending() {
     var i = Store.innst();
     if (!i.sendingAktiv || !i.mottakerEpost) return null; // dekkes av egne varsler
-    var iv = parseInt(i.intervallDager, 10) || 14;
-    var forrige = Store.leggTilDager(Store.nesteSending(), -iv);
-    var anker = /^\d{4}-\d{2}-\d{2}$/.test(i.nesteSending || "") ? i.nesteSending : null;
+    var forrige = Store.forrigeSending();
+    var anker = i.rytme === "maaned" ? (i.rytmeFra || null) : (/^\d{4}-\d{2}-\d{2}$/.test(i.nesteSending || "") ? i.nesteSending : null);
     if (!anker || forrige < anker) return null;
     var idag = Store.idag();
     if (forrige > idag || (forrige === idag && new Date().getHours() < 9)) return null;
@@ -805,9 +804,9 @@
 
       // Periodelinje: fra forrige sending til neste
       var neste = Store.nesteSending();
-      var periodeStart = Store.leggTilDager(neste, -(i.intervallDager || 14));
+      var periodeStart = Store.forrigeSending();
       var sist = sistSendtDato();
-      var start = sist && sist < neste && sist >= Store.leggTilDager(neste, -2 * (i.intervallDager || 14)) ? sist : periodeStart;
+      var start = sist && sist < neste && sist >= Store.leggTilDager(periodeStart, -(i.rytme === "maaned" ? 31 : (i.intervallDager || 14))) ? sist : periodeStart;
       var lengde = Math.max(1, dagerMellom(start, neste));
       var gaatt = Math.min(lengde, Math.max(0, dagerMellom(start, Store.idag())));
       var andel = gaatt / lengde;
@@ -1778,10 +1777,12 @@
       kopiEpost: felt({ etikett: "Kopi til", type: "text", verdi: i.kopiEpost, placeholder: "Valgfritt – flere adresser skilles med komma", inputmode: "email" }),
       emne: felt({ etikett: "Emne", verdi: i.emne }),
       melding: felt({ etikett: "Melding", type: "textarea", rader: 6, verdi: i.melding }),
-      intervallDager: felt({ etikett: "Intervall (dager)", verdi: String(i.intervallDager), readonly: true }),
-      nesteSending: felt({ etikett: "Første sending (startdato)", verdi: dato(i.nesteSending), readonly: true }),
+      rytme: felt({ etikett: "Sendes til View", type: "select", verdi: i.rytme, valg: [{ verdi: "annenhver", tekst: "Annenhver mandag kl. 07:00" }, { verdi: "maaned", tekst: "Hvert månedsskifte – den 1. kl. 07:00" }] }),
+      betalingsfristDager: felt({ etikett: "Betalingsfrist (dager)", type: "number", verdi: i.betalingsfristDager, min: "0", max: "365", step: "1", inputmode: "numeric", hint: "Brukes i grunnlaget når saken ikke har egne betalingsbetingelser fra oppdragsbekreftelsen." }),
       mvaSats: felt({ etikett: "MVA-sats (%)", type: "number", verdi: i.mvaSats, min: "0", max: "100", step: "0.1", inputmode: "decimal" })
     };
+    var nesteTekst = el("strong", null, sendeTidTekst(Store.nesteSending()));
+    var omTekst = el("p", null, "Timer føres her, samles i en løpende fil i OneDrive og sendes automatisk til View " + rytmeTekst(i) + ".");
     var aktivF = bryter({ etikett: "Automatisk sending er på", verdi: i.sendingAktiv });
     aktivF.input.addEventListener("change", function () { aktivF.querySelector("label span:last-child").textContent = aktivF.input.checked ? "Automatisk sending er på" : "Automatisk sending er av"; });
     if (!i.sendingAktiv) aktivF.querySelector("label span:last-child").textContent = "Automatisk sending er av";
@@ -1797,9 +1798,9 @@
       el("fieldset", { class: "gruppe" }, el("legend", null, "Sending og avgift"),
         aktivF,
         el("div", { class: "rytme" },
-          el("p", { class: "rytme-neste" }, el("span", null, "Neste automatiske sending"), el("strong", null, sendeTidTekst(Store.nesteSending()))),
-          el("div", { class: "grid-2" }, f.intervallDager, f.nesteSending),
-          el("p", { class: "felt-hint" }, "Styres av den automatiske flyten i Microsoft 365 – endres der. Flyten sender annenhver mandag kl. 07:00.")),
+          el("p", { class: "rytme-neste" }, el("span", null, "Neste automatiske sending"), nesteTekst),
+          el("div", { class: "grid-2" }, f.rytme, f.betalingsfristDager),
+          el("p", { class: "felt-hint" }, "Flyten i Microsoft 365 sjekker hver morgen kl. 07:00 og sender bare på dagene som passer valget her.")),
         el("div", { class: "grid-3" }, f.mvaSats),
         el("p", { class: "felt-hint" }, erDemo() ? "I demo lagres innstillingene bare i denne nettleseren." : "Lagres i OneDrive (Timeføring/innstillinger.json). Power Automate-flyten leser den samme fila.")),
       el("div", { class: "knapperad" }, lagre));
@@ -1814,18 +1815,24 @@
         emne: f.emne.input.value.trim(),
         melding: f.melding.input.value,
         mvaSats: Number(String(f.mvaSats.input.value).replace(",", ".")),
+        rytme: f.rytme.input.value === "maaned" ? "maaned" : "annenhver",
+        betalingsfristDager: parseInt(f.betalingsfristDager.input.value, 10),
         sendingAktiv: aktivF.input.checked
       };
+      if (v.rytme === "maaned" && Store.innst().rytme !== "maaned") v.rytmeFra = Store.idag();
       var feil = [];
       if (v.mottakerEpost && !Store.gyldigEpost(v.mottakerEpost)) { f.mottakerEpost.settFeil("Skriv en gyldig e-postadresse, f.eks. navn@view.no."); feil.push(f.mottakerEpost); }
       if (v.kopiEpost && !v.kopiEpost.split(/[;,\s]+/).filter(Boolean).every(Store.gyldigEpost)) { f.kopiEpost.settFeil("En av adressene er ikke gyldig."); feil.push(f.kopiEpost); }
       if (!v.emne) { f.emne.settFeil("Skriv et emne."); feil.push(f.emne); }
       if (!(v.mvaSats >= 0 && v.mvaSats <= 100)) { f.mvaSats.settFeil("Mellom 0 og 100."); feil.push(f.mvaSats); }
+      if (!(v.betalingsfristDager >= 0 && v.betalingsfristDager <= 365)) { f.betalingsfristDager.settFeil("Mellom 0 og 365 dager."); feil.push(f.betalingsfristDager); }
       if (feil.length) { feil[0].input.focus(); return; }
       lagre.disabled = true;
       try {
         await Store.lagreInnstillinger(v);
         mangler.hidden = !!v.mottakerEpost;
+        nesteTekst.textContent = sendeTidTekst(Store.nesteSending());
+        omTekst.textContent = "Timer føres her, samles i en løpende fil i OneDrive og sendes automatisk til View " + rytmeTekst(Store.innst()) + ".";
         toast("Innstillingene er lagret.", "ok");
       } catch (err) { toast(feilTekst(err), "feil"); }
       finally { lagre.disabled = false; }
@@ -1849,12 +1856,15 @@
           } }, "Last inn på nytt fra OneDrive")]));
 
     var hjelpPanel = panel("Om timeføringen", el("div", { class: "konto" },
-      el("p", null, "Timer føres her, samles i en løpende fil i OneDrive og sendes automatisk til View annenhver mandag."),
+      omTekst,
       el("button", { type: "button", class: "knapp sekundaer", onclick: visHjelp }, "Slik fungerer det"),
       el("p", { class: "firma" }, FIRMA.navn, el("br"), "Org.nr. " + FIRMA.orgnr)));
     node.appendChild(el("div", { class: "innst-grid" }, el("section", { class: "panel" }, form), el("div", { class: "innst-side" }, hjelpPanel, kontoPanel)));
     return { node: node, oppdater: function () { mangler.hidden = !!Store.innst().mottakerEpost; } };
   }
+
+  function rytmeTekst(i) { return i && i.rytme === "maaned" ? "den 1. i hver måned" : "annenhver mandag"; }
+  function stor(t) { return t.charAt(0).toUpperCase() + t.slice(1); }
 
   function visHjelp() {
     var i = Store.innst();
@@ -1862,7 +1872,7 @@
     var steg = [
       ["Før timer og utlegg", "På PC eller mobil. Alt lagres i OneDrive under «Timeføring» – ikke i nettleseren. Kjøring føres i km og faktureres etter statens sats (med mva)."],
       ["Løpende fil i OneDrive", "Timeføring › Til regnskap › Faktureringsgrunnlag.xlsx oppdateres automatisk med alle ufakturerte linjer."],
-      ["Sendes automatisk til View", "Annenhver mandag kl. 07:00 sender flyten i Microsoft 365 fila til " + mottaker + " hos View og flytter den til Timeføring › Sendt. Neste gang: " + sendeTidTekst(Store.nesteSending()) + "."],
+      ["Sendes automatisk til View", stor(rytmeTekst(i)) + " kl. 07:00 sender flyten i Microsoft 365 fila til " + mottaker + " hos View og flytter den til Timeføring › Sendt. Neste gang: " + sendeTidTekst(Store.nesteSending()) + "."],
       ["Linjene låses", "Linjene som var med i fila merkes «Sendt» og kan ikke endres. Nye føringer havner i neste periode."]
     ];
     aapneDialog({

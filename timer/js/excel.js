@@ -350,7 +350,7 @@
         k.kundenr != null && k.kundenr !== "" ? Number(k.kundenr) || String(k.kundenr) : "",
         k.navn || "", k.orgnr || "", k.fakturaadresse || "", k.fakturaEpost || "", k.fakturaMerkes || "",
         s.saksnr || "", s.navn || "", s.ansvarligAdvokat || "",
-        p.timer, p.timepris, p.salaer, p.utlegg, null, null, null, s.betalingsbetingelser || ""
+        p.timer, p.timepris, p.salaer, p.utlegg, null, null, null, s.betalingsbetingelser || (innstillinger && innstillinger.betalingsfristDager != null && innstillinger.betalingsfristDager !== "" ? innstillinger.betalingsfristDager + " dager" : "")
       ]);
       rad.getCell(idx(sDefs, "grunnlag")).value = { formula: K.salaer + r + "+" + K.utlegg + r, result: p.grunnlag };
       var mvaGrunn = p.utleggMva ? "(" + K.salaer + r + "+" + p.utleggMva.toFixed(2) + ")" : K.salaer + r;
